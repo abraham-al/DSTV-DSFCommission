@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DStv Ethiopia ESP Commission Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Ethiopic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #031B34;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 212, 255, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(123, 97, 255, 0.12) 0px, transparent 50%),
+                linear-gradient(135deg, #031B34 0%, #082C58 50%, #0E3D75 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', 'Noto Sans Ethiopic', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism utility card styling */
+        .glass-card {
+            background: rgba(8, 44, 88, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 212, 255, 0.18);
+            box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(0, 212, 255, 0.35);
+            box-shadow: 0 15px 35px 0 rgba(0, 212, 255, 0.18);
+        }
+
+        /* Touch-friendly Range Slider overrides */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            border: 1px solid rgba(0, 212, 255, 0.15);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #00D4FF;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 28px;
+            width: 28px;
+            border: none;
+            border-radius: 50%;
+            background: #00D4FF;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+        }
+
+        /* Ambient glow effect for earnings outputs */
+        @keyframes pulseGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+            50% { text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
+        }
+        .earnings-glow {
+            animation: pulseGlow 3s infinite;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col antialiased">
+
+<header class="border-b border-[#00D4FF]/20 bg-[#031B34]/90 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-md shadow-[#00D4FF]/20">
+                <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="4" />
+                    <path d="m16 8-8 8" />
+                    <path d="M12 8v8" />
+                    <path d="M8 8h8" />
+                </svg>
+            </div>
+            <div>
+                <span class="text-lg sm:text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-[#00D4FF]">
+                    DStv <span class="text-[#00D4FF]">Ethiopia</span>
+                </span>
+                <p class="text-[9px] uppercase tracking-widest text-[#00D4FF]/90 font-bold" data-i18n="tagline">ESP Sales Partner Portal</p>
+            </div>
+        </div>
+
+        <button onclick="toggleLang()" class="flex items-center space-x-1 px-4 py-2.5 rounded-full bg-gradient-to-r from-[#00D4FF] to-[#7B61FF] hover:from-[#1DA1FF] hover:to-[#00D4FF] text-white font-bold text-xs shadow-md shadow-[#00D4FF]/15 active:scale-95 transition-all duration-150">
+            <span id="langBtnText">አማርኛ</span>
+        </button>
+    </div>
+</header>
+
+<main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    
+    <div class="space-y-1">
+        <h1 class="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-[#00D4FF] tracking-tight leading-tight" data-i18n="app_title">
+            ESP Commission & Incentive Portal
+        </h1>
+        <p class="text-slate-400 text-xs sm:text-sm" data-i18n="app_subtitle">
+            Exclusive Service Partner official portal. Calculate exact monthly commissions, track tiered milestones, and compare packages.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 flex flex-col space-y-6">
+            <div class="glass-card rounded-2xl p-5 sm:p-6 flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+                        <h3 class="text-base sm:text-lg font-bold flex items-center space-x-2 text-[#00D4FF]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 11h.01M12 14h.01M15 11h.01M15 14h.01M12 17h.01M15 17h.01M5 19V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/>
+                            </svg>
+                            <span data-i18n="calc_header">Incentive Calculator</span>
+                        </h3>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-[#00D4FF]/20 text-[#00D4FF] border border-[#00D4FF]/30 uppercase">
+                            ESP Rates
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 mb-5">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider" data-i18n="lbl_package">Package Type</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button id="pkg_Access" onclick="setPackage('Access')" class="py-3 px-4 rounded-xl border border-[#00D4FF]/30 bg-[#00D4FF]/25 text-[#00D4FF] font-bold text-center transition-all duration-150 shadow-md">
+                                <span class="block text-sm" data-i18n="pkg_access">Access</span>
+                                <span class="text-[9px] opacity-75 font-normal block" data-i18n="pkg_access_desc">Entry Value Tier</span>
+                            </button>
+                            <button id="pkg_Compact" onclick="setPackage('Compact')" class="py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-400 font-bold text-center transition-all duration-150 hover:bg-white/10 hover:text-white">
+                                <span class="block text-sm" data-i18n="pkg_compact">Compact</span>
+                                <span class="text-[9px] opacity-75 font-normal block" data-i18n="pkg_compact_desc">Premium Medium Tier</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-5">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-300 uppercase tracking-wider" data-i18n="lbl_sales">Monthly Sales</label>
+                            <span class="text-[10px] font-semibold text-[#00D4FF] bg-[#00D4FF]/10 px-2.5 py-1 rounded-md border border-[#00D4FF]/20">
+                                <span data-i18n="range_limit">1 to 50 max</span>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center bg-white/5 rounded-xl border border-white/10 p-1">
+                            <button onclick="changeSales(-1)" class="w-12 h-12 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl transition-all duration-100" data-i18n="btn_dec">
+                                &minus;
+                            </button>
+                            <input id="salesInput" type="number" min="1" max="50" value="20" onchange="manualSales()" class="w-full bg-transparent border-none text-center text-xl sm:text-2xl font-black text-white focus:ring-0 focus:outline-none">
+                            <button onclick="changeSales(1)" class="w-12 h-12 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xl transition-all duration-100" data-i18n="btn_inc">
+                                &plus;
+                            </button>
+                        </div>
+
+                        <div class="pt-2 px-1">
+                            <input type="range" id="salesSlider" min="1" max="50" value="20" oninput="syncSales(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2 pt-4 border-t border-white/10">
+                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="lbl_presets">Quick Sales Presets</span>
+                    <div class="grid grid-cols-5 gap-1.5">
+                        <button onclick="setSales(5)" class="py-2.5 rounded-lg bg-white/5 hover:bg-[#00D4FF]/20 hover:border-[#00D4FF]/50 border border-white/10 text-xs font-bold transition-all duration-100 active:scale-95">5</button>
+                        <button onclick="setSales(10)" class="py-2.5 rounded-lg bg-white/5 hover:bg-[#00D4FF]/20 hover:border-[#00D4FF]/50 border border-white/10 text-xs font-bold transition-all duration-100 active:scale-95">10</button>
+                        <button onclick="setSales(20)" class="py-2.5 rounded-lg bg-white/5 hover:bg-[#00D4FF]/20 hover:border-[#00D4FF]/50 border border-white/10 text-xs font-bold transition-all duration-100 active:scale-95">20</button>
+                        <button onclick="setSales(35)" class="py-2.5 rounded-lg bg-white/5 hover:bg-[#00D4FF]/20 hover:border-[#00D4FF]/50 border border-white/10 text-xs font-bold transition-all duration-100 active:scale-95">35</button>
+                        <button onclick="setSales(50)" class="py-2.5 rounded-lg bg-white/5 hover:bg-[#00D4FF]/20 hover:border-[#00D4FF]/50 border border-white/10 text-xs font-bold transition-all duration-100 active:scale-95">50</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+            
+            <div class="glass-card rounded-2xl p-5 sm:p-6 relative overflow-hidden bg-gradient-to-br from-[#082C58]/80 to-[#031B34]/80 border-l-4 border-l-[#10B981]">
+                <div class="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-5 pointer-events-none">
+                    <svg class="w-60 h-60 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 6H3V5c0-.55.45-1 1-1h16c.55 0 1 .45 1 1v1zm1 5.5v5c0 1.93-4.48 3.5-10 3.5S2 18.43 2 16.5v-5c0 1.93 4.48 3.5 10 3.5s10-1.57 10-3.5zm-10 1.5c-4.42 0-8-.8-8-1.79v2.29c0 .99 3.58 1.8 8 1.8s8-.81 8-1.8v-2.29c0 .99-3.58 1.79-8 1.79zm0 3c-4.42 0-8-.8-8-1.79V16.5c0 .99 3.58 1.8 8 1.8s8-.81 8-1.8v-1.29c0 .99-3.58 1.79-8 1.79zm0-10C6.48 6 2 7.57 2 9.5s4.48 3.5 10 3.5 10-1.57 10-3.5S17.52 6 12 6zm0 1.79c3.31 0 6 .54 6 1.21s-2.69 1.21-6 1.21-6-.54-6-1.21 2.69-1.21 6-1.21z"/>
+                    </svg>
+                </div>
+                
+                <div class="flex justify-between items-start">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold tracking-widest text-[#10B981] uppercase" data-i18n="payout_lbl">ESTIMATED PAYOUT</p>
+                        <h4 class="text-base sm:text-lg font-bold" data-i18n="payout_title">Total Monthly Earnings</h4>
+                    </div>
+                </div>
+
+                <div class="my-5">
+                    <span class="text-4xl sm:text-5xl font-black text-[#10B981] tracking-tight earnings-glow" id="totalEarn">0.00</span>
+                    <span class="text-lg sm:text-2xl font-bold text-slate-300 ml-1.5">ETB</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-white/5 pt-4 text-xs">
+                    <div>
+                        <span class="block text-slate-400" data-i18n="summary_agent">Channel Segment:</span>
+                        <strong class="text-slate-200" id="summaryAgentText">ESP Sales Partner</strong>
+                    </div>
+                    <div>
+                        <span class="block text-slate-400" data-i18n="summary_plan">Target Package:</span>
+                        <strong class="text-slate-200" id="summaryPackageText">Access Plan</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-4 border-l-2 border-l-[#1DA1FF]">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block tracking-wider" data-i18n="kpi_box_rate">Commission Per Box</span>
+                    <div class="flex items-baseline space-x-1 mt-1.5">
+                        <span class="text-xl sm:text-2xl font-black text-[#1DA1FF]" id="boxRate">0</span>
+                        <span class="text-xs font-bold text-slate-300">ETB</span>
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-1" data-i18n="kpi_rate_sub">Includes tier multipliers</span>
+                </div>
+
+                <div class="glass-card rounded-2xl p-4 border-l-2 border-l-[#00D4FF]">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block tracking-wider" data-i18n="kpi_total_sales">Sales Volume</span>
+                    <div class="flex items-baseline space-x-1 mt-1.5">
+                        <span class="text-xl sm:text-2xl font-black text-[#00D4FF]" id="salesDisplayCount">0</span>
+                        <span class="text-xs font-bold text-slate-300" data-i18n="kpi_boxes_unit">Boxes</span>
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-1" data-i18n="kpi_cap_sub">Monthly achievements</span>
+                </div>
+
+                <div class="glass-card rounded-2xl p-4 border-l-2 border-l-[#FFC857]">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block tracking-wider" data-i18n="kpi_tier">Achievement Tier</span>
+                    <div class="mt-1.5 flex items-center space-x-2">
+                        <span class="text-lg sm:text-xl font-bold tracking-tight" id="tierDisplay">Starter</span>
+                    </div>
+                    <span class="text-[9px] block mt-1 font-semibold" id="tierProgressDesc">Sell more!</span>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 relative">
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest" data-i18n="progress_title">Incentive Tier Progress</h5>
+                    <span class="text-xs font-black text-[#00D4FF]" id="progressBarLabel">20 / 50</span>
+                </div>
+                
+                <div class="w-full bg-slate-900 rounded-full h-3.5 overflow-hidden relative border border-white/5 shadow-inner">
+                    <div id="progressBarFill" class="bg-gradient-to-r from-[#00D4FF] via-[#7B61FF] to-[#FFC857] h-full rounded-full transition-all duration-300 ease-out" style="width: 40%;"></div>
+                </div>
+
+                <div class="flex justify-between text-[9px] font-bold text-slate-400 mt-2">
+                    <span class="flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#00D4FF] inline-block"></span>
+                        <span data-i18n="lbl_starter_sm">Starter (1+)</span>
+                    </span>
+                    <span class="flex items-center space-x-1">
+                        <span id="accelPointIndicator" class="w-1.5 h-1.5 rounded-full bg-[#7B61FF] inline-block"></span>
+                        <span id="accelPointLabel">Accelerator (5+)</span>
+                    </span>
+                    <span class="flex items-center space-x-1">
+                        <span id="champPointIndicator" class="w-1.5 h-1.5 rounded-full bg-[#FFC857] inline-block"></span>
+                        <span id="champPointLabel">Champion (10+)</span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/10 pb-4 mb-4 gap-4">
+            <div>
+                <h3 class="text-base sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#00D4FF] flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    <span data-i18n="breakdown_title">Commission Itemization Ledger</span>
+                </h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs" data-i18n="breakdown_desc">Real-time breakdown itemizing individual components that make up the aggregate payout per box.</p>
+            </div>
+            <div id="breakdownHeaderBadge" class="bg-[#00D4FF]/10 text-[#00D4FF] border border-[#00D4FF]/25 px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono">
+                Access - 20 Sales
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-white/10">
+            <table class="min-w-full divide-y divide-white/10 text-left text-xs sm:text-sm">
+                <thead class="bg-slate-900/40 text-slate-300 font-semibold">
+                    <tr>
+                        <th scope="col" class="px-4 py-3 sm:px-6 sm:py-4" data-i18n="col_component">Financial Component</th>
+                        <th scope="col" class="px-4 py-3 sm:px-6 sm:py-4 text-right" data-i18n="col_multiplier">Unit Multiplier</th>
+                        <th scope="col" class="px-4 py-3 sm:px-6 sm:py-4 text-right" data-i18n="col_unit_val">Unit Value</th>
+                        <th scope="col" class="px-4 py-3 sm:px-6 sm:py-4 text-right text-[#00D4FF]" data-i18n="col_total_earnings">Total Contribution</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 bg-slate-950/25">
+                    <tr class="hover:bg-white/5 transition-colors duration-100">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 font-medium text-slate-200">
+                            <span class="block font-bold text-white" data-i18n="row_sales_title">Sales Volume</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="row_sales_sub">Actual monthly sales volume count</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblSalesMultiplier">20</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400">&minus;</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-black text-white" id="tblSalesCount">20 Boxes</td>
+                    </tr>
+                    
+                    <tr class="hover:bg-white/5 transition-colors duration-100">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 font-medium text-slate-200">
+                            <span class="block font-bold text-white" data-i18n="row_margin_title">Front Margin</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="row_margin_sub">Immediate physical sale cash retention margin</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblMarginMultiplier">20</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400">150 ETB</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-bold text-slate-300" id="tblMarginTotal">3,000 ETB</td>
+                    </tr>
+
+                    <tr class="hover:bg-white/5 transition-colors duration-100">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 font-medium text-slate-200">
+                            <span class="block font-bold text-white" data-i18n="row_sub_title">Subscription Allocation</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="row_sub_sub">Additional recurring client payment contribution reward</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblSubMultiplier">20</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblSubUnit">150 ETB</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-bold text-slate-300" id="tblSubTotal">3,000 ETB</td>
+                    </tr>
+
+                    <tr class="hover:bg-white/5 transition-colors duration-100">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 font-medium text-slate-200">
+                            <span class="block font-bold text-white" data-i18n="row_pay_title">Pay Per Box (Tier Reward)</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="row_pay_sub">Sliding incentive bonus tier adjustment</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblPayMultiplier">20</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-400" id="tblPayUnit">300 ETB</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-bold text-slate-300" id="tblPayTotal">6,000 ETB</td>
+                    </tr>
+
+                    <tr class="hover:bg-white/5 transition-colors duration-100 bg-[#00D4FF]/5 border-t-2 border-[#00D4FF]/30 font-semibold text-slate-200">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4">
+                            <span class="block font-black text-[#00D4FF]" data-i18n="row_box_sum_title">Total Payout Per Decoder</span>
+                            <span class="text-[10px] text-slate-300" data-i18n="row_box_sum_sub">Combined cumulative incentive payout for one box</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right text-slate-400">&minus;</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-extrabold text-[#00D4FF]" id="tblBoxSumUnit">600 ETB</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right text-slate-400">&minus;</td>
+                    </tr>
+
+                    <tr class="bg-[#10B981]/5 border-t border-[#10B981]/20 font-semibold text-slate-200">
+                        <td class="px-4 py-3 sm:px-6 sm:py-4">
+                            <span class="block font-black text-[#10B981]" data-i18n="row_final_sum_title">Calculated Payout</span>
+                            <span class="text-[10px] text-slate-300" data-i18n="row_final_sum_sub">Total combined monthly incentive payout</span>
+                        </td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right text-slate-400">&minus;</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right text-slate-400">&minus;</td>
+                        <td class="px-4 py-3 sm:px-6 sm:py-4 text-right font-black text-[#10B981] text-base sm:text-lg" id="tblBoxSumTotal">12,000 ETB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-base sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#7B61FF] flex items-center space-x-2">
+                <svg class="w-5 h-5 text-[#7B61FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/>
+                </svg>
+                <span data-i18n="compare_title">Access vs Compact Comparison</span>
+            </h3>
+            <p class="text-slate-400 text-xs mt-1" data-i18n="compare_desc">Instantly compare potential earnings using Access plans vs the high-yield Compact plans side-by-side.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-[#082C58]/30 to-[#031B34]/50 border-t-4 border-t-[#1DA1FF]">
+                <div class="flex justify-between items-start border-b border-white/5 pb-3 mb-3">
+                    <div>
+                        <h4 class="text-sm sm:text-base font-bold text-[#1DA1FF]" data-i18n="scenario_a_title">ESP Access Sales Scenario</h4>
+                        <p class="text-[10px] text-slate-400" data-i18n="compare_access_sub">Calculated at Access package rates</p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider bg-[#1DA1FF]/10 text-[#1DA1FF] border border-[#1DA1FF]/20 uppercase">ACCESS</span>
+                </div>
+
+                <div class="space-y-3 text-xs sm:text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_volume">Sales Volume:</span>
+                        <span class="font-bold text-white"><span class="scenarioSalesCount">20</span> <span data-i18n="lbl_boxes_unit_small">Boxes</span></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_tier">Sales Tier:</span>
+                        <span class="font-bold text-[#FFC857]" id="scenarioCardA_Tier">Champion</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_rate">Rate Per Decoder:</span>
+                        <span class="font-bold text-white" id="scenarioCardA_Rate">600 ETB</span>
+                    </div>
+                    <div class="flex justify-between border-t border-white/5 pt-3 mt-3 items-baseline">
+                        <span class="text-slate-300 font-bold" data-i18n="compare_monthly">Monthly Earnings:</span>
+                        <span class="text-lg sm:text-xl font-black text-[#1DA1FF]" id="scenarioCardA_Total">12,000 ETB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-[#0E3D75]/30 to-[#031B34]/50 border-t-4 border-t-[#00D4FF]">
+                <div class="flex justify-between items-start border-b border-white/5 pb-3 mb-3">
+                    <div>
+                        <h4 class="text-sm sm:text-base font-bold text-[#00D4FF]" data-i18n="scenario_b_title">ESP Compact Sales Scenario</h4>
+                        <p class="text-[10px] text-slate-400" data-i18n="compare_compact_sub">Calculated at Compact package rates</p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider bg-[#00D4FF]/10 text-[#00D4FF] border border-[#00D4FF]/20 uppercase">COMPACT</span>
+                </div>
+
+                <div class="space-y-3 text-xs sm:text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_volume">Sales Volume:</span>
+                        <span class="font-bold text-white"><span class="scenarioSalesCount">20</span> <span data-i18n="lbl_boxes_unit_small">Boxes</span></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_tier">Sales Tier:</span>
+                        <span class="font-bold text-[#FFC857]" id="scenarioCardB_Tier">Champion</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400" data-i18n="compare_rate">Rate Per Decoder:</span>
+                        <span class="font-bold text-white" id="scenarioCardB_Rate">1,000 ETB</span>
+                    </div>
+                    <div class="flex justify-between border-t border-white/5 pt-3 mt-3 items-baseline">
+                        <span class="text-slate-300 font-bold" data-i18n="compare_monthly">Monthly Earnings:</span>
+                        <span class="text-lg sm:text-xl font-black text-[#00D4FF]" id="scenarioCardB_Total">20,000 ETB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="upsellBanner" class="p-4 rounded-xl bg-gradient-to-r from-[#7B61FF]/20 to-[#00D4FF]/10 border border-[#7B61FF]/40 text-center flex flex-col sm:flex-row justify-between items-center px-6 gap-3">
+            <div class="flex items-center space-x-3 text-left">
+                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#7B61FF]/20 text-[#00D4FF]">
+                    🚀
+                </span>
+                <div>
+                    <strong class="block text-xs sm:text-sm font-black text-white" data-i18n="upsell_title">Upsell Growth Opportunity!</strong>
+                    <span class="text-[10px] sm:text-xs text-slate-300" data-i18n="upsell_desc">By converting your current sales volume to Compact plans, you earn more.</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-[9px] uppercase font-black text-[#FFC857]" data-i18n="upsell_bonus">Potential Extra Earnings</span>
+                <div class="text-base sm:text-lg font-black text-[#00D4FF]" id="upsellDifferenceText">0.00 ETB</div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+<div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+    <div class="glass-card rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/10 pb-4 mb-4 gap-4">
+            <div>
+                <h3 class="text-base sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#00D4FF] flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18M10 3v18M14 3v18"/>
+                    </svg>
+                    <span id="commissionTableTitle">ESP Access Commission Rate Table</span>
+                </h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs mt-1" id="commissionTableDesc">Official tiered commission schedule for Access package — 1st Subscription: 100 ETB &bull; Front Margin: 150 ETB (fixed)</p>
+            </div>
+            <span id="commissionTableBadge" class="bg-[#00D4FF]/10 text-[#00D4FF] border border-[#00D4FF]/25 px-3.5 py-1.5 rounded-xl text-xs font-bold">ACCESS RATES</span>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-white/10">
+            <table class="min-w-full divide-y divide-white/10 text-xs sm:text-sm text-left">
+                <thead class="bg-slate-900/50 text-slate-300 font-semibold">
+                    <tr>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-center">Sales</th>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-right">Front Margin</th>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-right">Pay Per Box</th>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-right">1st Subscription</th>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-right text-[#00D4FF]">Total / Box</th>
+                        <th class="px-3 py-3 sm:px-5 sm:py-4 text-right text-[#10B981]">TOTAL PAY</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 bg-slate-950/20" id="commissionTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer class="border-t border-[#00D4FF]/10 bg-[#031B34]/95 py-6 mt-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+        <div class="flex items-center space-x-3">
+            <div class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-[#7B61FF]">DStv</div>
+            <div class="w-1.5 h-6 bg-slate-700 rounded-full"></div>
+            <p class="text-xs text-slate-400" id="footerCopyright" data-i18n="footer_copyright">&copy; 2026 MultiChoice Ethiopia. ESP Internal Channel Portal.</p>
+        </div>
+        <div class="flex space-x-4 text-xs text-slate-400">
+            <span class="hover:text-white cursor-pointer" data-i18n="footer_help">Help Center</span>
+            <span>&bull;</span>
+            <span class="hover:text-white cursor-pointer" data-i18n="footer_terms">Incentive Rules</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // System variables and settings
+    let activePackage = "Access";
+    let activeSales = 20;
+    let isAmharic = false;
+
+    // Direct Translation Database (ESP Specific context mappings)
+    const dictionary = {
+        en: {
+            tagline: "ESP Sales Partner Portal",
+            app_title: "ESP Commission & Incentive Portal",
+            app_subtitle: "Exclusive Service Partner official portal. Calculate exact monthly commissions, track tiered milestones, and compare packages.",
+            calc_header: "Incentive Calculator",
+            lbl_package: "Package Type",
+            pkg_access: "Access",
+            pkg_access_desc: "Entry Value Tier",
+            pkg_compact: "Compact",
+            pkg_compact_desc: "Premium Medium Tier",
+            lbl_sales: "Monthly Sales",
+            range_limit: "1 to 50 max",
+            btn_dec: "−",
+            btn_inc: "+",
+            lbl_presets: "Quick Sales Presets",
+            payout_lbl: "ESTIMATED PAYOUT",
+            payout_title: "Total Monthly Earnings",
+            summary_agent: "Channel Segment:",
+            summary_plan: "Target Package:",
+            kpi_box_rate: "Commission Per Box",
+            kpi_rate_sub: "Includes tier multipliers",
+            kpi_total_sales: "Sales Volume",
+            kpi_boxes_unit: "Boxes",
+            kpi_cap_sub: "Monthly achievements",
+            kpi_tier: "Achievement Tier",
+            progress_title: "Incentive Tier Progress",
+            lbl_starter_sm: "Starter (1+)",
+            breakdown_title: "Commission Itemization Ledger",
+            breakdown_desc: "Real-time breakdown itemizing individual components that make up the aggregate payout per box.",
+            col_component: "Financial Component",
+            col_multiplier: "Unit Multiplier",
+            col_unit_val: "Unit Value",
+            col_total_earnings: "Total Contribution",
+            row_sales_title: "Sales Volume",
+            row_sales_sub: "Actual monthly sales volume count",
+            row_margin_title: "Front Margin",
+            row_margin_sub: "Immediate physical sale cash retention margin",
+            row_sub_title: "Subscription Allocation",
+            row_sub_sub: "Additional recurring client payment contribution reward",
+            row_pay_title: "Pay Per Box (Tier Reward)",
+            row_pay_sub: "Sliding incentive bonus tier adjustment",
+            row_box_sum_title: "Total Payout Per Decoder",
+            row_box_sum_sub: "Combined cumulative incentive payout for one box",
+            row_final_sum_title: "Calculated Payout",
+            row_final_sum_sub: "Total combined monthly incentive payout",
+            compare_title: "Access vs Compact Comparison",
+            compare_desc: "Instantly compare potential earnings using Access plans vs the high-yield Compact plans side-by-side.",
+            scenario_a_title: "ESP Access Sales Scenario",
+            compare_access_sub: "Calculated at Access package rates",
+            scenario_b_title: "ESP Compact Sales Scenario",
+            compare_compact_sub: "Calculated at Compact package rates",
+            compare_volume: "Sales Volume:",
+            compare_tier: "Sales Tier:",
+            compare_rate: "Rate Per Decoder:",
+            compare_monthly: "Monthly Earnings:",
+            lbl_boxes_unit_small: "Boxes",
+            upsell_title: "Upsell Growth Opportunity!",
+            upsell_desc: "By converting your current sales volume to Compact plans, you earn more.",
+            upsell_bonus: "Potential Extra Earnings",
+            footer_copyright: "© 2026 MultiChoice Ethiopia. ESP Internal Channel Portal.",
+            footer_help: "Help Desk",
+            footer_terms: "Incentive Rules",
+
+            // Dynamic Milestone levels
+            tier_starter: "Starter",
+            tier_accelerator: "Accelerator",
+            tier_champion: "Champion",
+
+            progress_max: "Maximum Tier Achieved! 🔥",
+            progress_needed: "Sell {num} more to unlock {tier}!"
+        },
+        am: {
+            tagline: "ESP የሽያጭ ወኪል ፖርታል",
+            app_title: "የESP ሽያጭ ኮሚሽን እና ማበረታቻ ፖርታል",
+            app_subtitle: "የልዩ አገልግሎት አጋር (ESP) ኦፊሴላዊ መረጃ ማዕከል። ወርሃዊ ኮሚሽንዎን ያስሉ፣ የሽያጭ ደረጃዎችዎን ይከታተሉ፣ እና ጥቅሎችን ያነጻጽሩ።",
+            calc_header: "የማበረታቻ ስሌት ማስያ",
+            lbl_package: "የፓኬጅ አይነት",
+            pkg_access: "አክሰስ (Access)",
+            pkg_access_desc: "ተመጣጣኝ መግቢያ ፓኬጅ",
+            pkg_compact: "ኮምፓክት (Compact)",
+            pkg_compact_desc: "ምርጥ መካከለኛ ፓኬጅ",
+            lbl_sales: "የወር ሽያጭ መጠን",
+            range_limit: "ከ 1 እስከ 50 ቢበዛ",
+            btn_dec: "ቀንስ",
+            btn_inc: "ጨምር",
+            lbl_presets: "የፍጥነት መተግበሪያ ቁልፎች",
+            payout_lbl: "የሚጠበቅ ክፍያ ድምር",
+            payout_title: "ጠቅላላ ወርሃዊ ገቢ",
+            summary_agent: "የሽያጭ ማስተላለፊያ፡",
+            summary_plan: "የተመረጠው ፓኬጅ፡",
+            kpi_box_rate: "የአንድ ዲኮደር ኮሚሽን",
+            kpi_rate_sub: "የደረጃ ማባዣዎችን ያካትታል",
+            kpi_total_sales: "የሽያጭ መጠን",
+            kpi_boxes_unit: "ዲኮደሮች",
+            kpi_cap_sub: "የወርሃዊ አፈፃፀም",
+            kpi_tier: "የአፈፃፀም ደረጃ",
+            progress_title: "የማበረታቻ ደረጃ እድገት",
+            lbl_starter_sm: "ጀማሪ (1+)",
+            breakdown_title: "ዝርዝር የኮሚሽን ስሌት ሰንጠረዥ",
+            breakdown_desc: "ለአንድ ዲኮደር ሽያጭ የሚታሰቡ የተለያዩ የትርፍ ክፍፍልና ማበረታቻ ዝርዝር ስሌቶች።",
+            col_component: "የክፍያ ዝርዝር",
+            col_multiplier: "የሽያጭ ብዛት",
+            col_unit_val: "ነጠላ ዋጋ",
+            col_total_earnings: "ጠቅላላ ድምር አስተዋፅዖ",
+            row_sales_title: "የሽያጭ መጠን",
+            row_sales_sub: "በወር ውስጥ የተሸጠው ጠቅላላ ዲኮደር ብዛት",
+            row_margin_title: "የመጀመሪያ ትርፍ (Front Margin)",
+            row_margin_sub: "ዲኮደሩ ሲሸጥ ወዲያውኑ የሚገኝ ቀጥተኛ ትርፍ",
+            row_sub_title: "የደንበኝነት ምዝገባ ኮሚሽን",
+            row_sub_sub: "ለደንበኛው ምዝገባ የሚከፈል ተጨማሪ ወርሃዊ ማበረታቻ",
+            row_pay_title: "የዲኮደር ቦነስ (Pay Per Box)",
+            row_pay_sub: "እንደ ሽያጩ አጠቃላይ መጠን የሚሰላ ወርሃዊ ተጨማሪ ቦነስ",
+            row_box_sum_title: "ለአንድ ዲኮደር ጠቅላላ ክፍያ",
+            row_box_sum_sub: "የሁሉም ስሌቶች ድምር ለአንድ ዲኮደር ሽያጭ",
+            row_final_sum_title: "የተሰላ ጠቅላላ ክፍያ",
+            row_final_sum_sub: "ግምታዊ ጠቅላላ ወርሃዊ ማበረታቻ ክፍያ ድምር",
+            compare_title: "የጥቅል ማነፃፀሪያ ሰንጠረዥ",
+            compare_desc: "የአክሰስ እና ኮምፓክት ጥቅል ሽያጮችን ወርሃዊ ትርፍ ጎን ለጎን ያነጻጽሩ።",
+            scenario_a_title: "ESP አክሰስ የሽያጭ ምሳሌ",
+            compare_access_sub: "በአክሰስ ፓኬጅ ክፍያ ተመን መሰረት የተሰላ",
+            scenario_b_title: "ESP ኮምፓክት የሽያጭ ምሳሌ",
+            compare_compact_sub: "በኮምፓክት ፓኬጅ ክፍያ ተመን መሰረት የተሰላ",
+            compare_volume: "የሽያጭ መጠን፡",
+            compare_tier: "የአፈፃፀም ደረጃ፡",
+            compare_rate: "ኮሚሽን በአንድ ሽያጭ፡",
+            compare_monthly: "ወርሃዊ ገቢ፡",
+            lbl_boxes_unit_small: "ዲኮደሮች",
+            upsell_title: "የሽያጭ ማሳደጊያ እድል!",
+            upsell_desc: "ወደ ኮምፓክት ሽያጮች በማተኮር ለአንድ ዲኮደር የሚከፈለውን ኮሚሽን ይጨምሩ።",
+            upsell_bonus: "የሚገኝ ተጨማሪ ወርሃዊ ገቢ",
+            footer_copyright: "© 2026 መልቲቾይስ ኢትዮጵያ። ESP የውስጥ ሰርጥ መረጃ ፖርታል።",
+            footer_help: "የእርዳታ ሰሌዳ",
+            footer_terms: "የማበረታቻ ደንቦች",
+
+            // Milestones
+            tier_starter: "ጀማሪ",
+            tier_accelerator: "አክሰለሬተር",
+            tier_champion: "ሻምፒዮን",
+
+            progress_max: "ከፍተኛው የሻምፒዮን ደረጃ ላይ ደርሰዋል! 🔥",
+            progress_needed: "{tier} ለመሆን {num} ተጨማሪ መሸጥ ያስፈልግዎታል!"
+        }
+    };
+
+    // Calculate dynamic commission rate per box based on the official ESP commission table
+    // Access: Front Margin 150 + 1st Sub 100 + Pay Per Box (tiered) = Total/Box
+    // Compact: Front Margin 150 + 1st Sub 300 + Pay Per Box (tiered) = Total/Box
+    // Pay Per Box tiers: 0 for 1-4, 100 at 5, 150 at 6, 200 at 7, 250 at 8, 300 at 9+
+    function getCommissionRatePerBox(pkg, salesCount) {
+        const s = parseInt(salesCount) || 1;
+        let payPerBox = 0;
+        if (s <= 4) payPerBox = 0;
+        else if (s === 5) payPerBox = 100;
+        else if (s === 6) payPerBox = 150;
+        else if (s === 7) payPerBox = 200;
+        else if (s === 8) payPerBox = 250;
+        else payPerBox = 300; // 9+
+
+        const frontMargin = 150;
+        const sub = pkg === "Access" ? 100 : 300;
+        return frontMargin + sub + payPerBox;
+    }
+
+    // Identify current sales tier
+    function getSalesTierName(salesCount) {
+        const s = parseInt(salesCount) || 1;
+        const currentLang = isAmharic ? 'am' : 'en';
+        if (s >= 10) return dictionary[currentLang].tier_champion;
+        if (s >= 5) return dictionary[currentLang].tier_accelerator;
+        return dictionary[currentLang].tier_starter;
+    }
+
+    // Toggle active Package selection state
+    function setPackage(pkg) {
+        activePackage = pkg;
+        document.getElementById('pkg_Access').className = pkg === 'Access' 
+            ? "py-3 px-4 rounded-xl border border-[#00D4FF]/30 bg-[#00D4FF]/25 text-[#00D4FF] font-bold text-center transition-all duration-150 shadow-md"
+            : "py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-400 font-bold text-center transition-all duration-150 hover:bg-white/10 hover:text-white";
+        
+        document.getElementById('pkg_Compact').className = pkg === 'Compact' 
+            ? "py-3 px-4 rounded-xl border border-[#00D4FF]/30 bg-[#00D4FF]/25 text-[#00D4FF] font-bold text-center transition-all duration-150 shadow-md"
+            : "py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-400 font-bold text-center transition-all duration-150 hover:bg-white/10 hover:text-white";
+        
+        recalculate();
+    }
+
+    // Toggle selected localization values
+    function toggleLang() {
+        isAmharic = !isAmharic;
+        document.getElementById('langBtnText').innerText = isAmharic ? "English" : "አማርኛ";
+        translateUI();
+        recalculate();
+    }
+
+    // Map localized strings to DOM targets
+    function translateUI() {
+        const currentLang = isAmharic ? 'am' : 'en';
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dictionary[currentLang] && dictionary[currentLang][key]) {
+                el.innerText = dictionary[currentLang][key];
+            }
+        });
+    }
+
+    // Main system calculations and updates loop
+    function recalculate() {
+        const currentLang = isAmharic ? 'am' : 'en';
+
+        // Enforce strict cap limits to 50
+        if (activeSales > 50) activeSales = 50;
+        if (activeSales < 1) activeSales = 1;
+
+        // Synchronize inputs
+        document.getElementById('salesInput').value = activeSales;
+        document.getElementById('salesSlider').value = activeSales;
+
+        // Fetch dynamic rate values
+        const ratePerBox = getCommissionRatePerBox(activePackage, activeSales);
+        
+        // Month volume only calculations
+        const totalEarnings = activeSales * ratePerBox;
+
+        // Populate active dashboard values
+        document.getElementById('totalEarn').innerText = totalEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('boxRate').innerText = ratePerBox.toLocaleString();
+        document.getElementById('salesDisplayCount').innerText = activeSales;
+
+        const tierName = getSalesTierName(activeSales);
+        const tierDisplayEl = document.getElementById('tierDisplay');
+        tierDisplayEl.innerText = tierName;
+
+        // Highlight Active Tier levels visually
+        if (tierName === dictionary[currentLang].tier_champion) {
+            tierDisplayEl.className = "text-lg sm:text-xl font-extrabold tracking-tight text-[#FFC857]";
+        } else if (tierName === dictionary[currentLang].tier_accelerator) {
+            tierDisplayEl.className = "text-lg sm:text-xl font-extrabold tracking-tight text-[#7B61FF]";
+        } else {
+            tierDisplayEl.className = "text-lg sm:text-xl font-extrabold tracking-tight text-[#00D4FF]";
+        }
+
+        // Calculate transparent breakdown margins exactly as structured in the data sheet
+        const frontMarginVal = 150; 
+        const subVal = activePackage === "Access" ? 100 : 300; 
+        const payPerBoxVal = Math.max(0, ratePerBox - frontMarginVal - subVal);
+
+        // Populate dynamic summaries
+        document.getElementById('summaryAgentText').innerText = isAmharic ? "ESP ሽያጭ ወኪል" : "ESP Sales Partner";
+        document.getElementById('summaryPackageText').innerText = activePackage === "Access" 
+            ? (isAmharic ? "አክሰስ ፓኬጅ" : "Access Plan") 
+            : (isAmharic ? "ኮምፓክት ፓኬጅ" : "Compact Plan");
+
+        // Detailed breakdowns ledger table updates
+        document.getElementById('breakdownHeaderBadge').innerText = `${activePackage} - ${activeSales} ${isAmharic ? 'ሽያጮች' : 'Sales'}`;
+        document.getElementById('tblSalesMultiplier').innerText = activeSales;
+        document.getElementById('tblSalesCount').innerText = `${activeSales} ${isAmharic ? 'ዲኮደሮች' : 'Boxes'}`;
+
+        document.getElementById('tblMarginMultiplier').innerText = activeSales;
+        document.getElementById('tblMarginTotal').innerText = `${(activeSales * frontMarginVal).toLocaleString()} ETB`;
+
+        document.getElementById('tblSubMultiplier').innerText = activeSales;
+        document.getElementById('tblSubUnit').innerText = `${subVal} ETB`;
+        document.getElementById('tblSubTotal').innerText = `${(activeSales * subVal).toLocaleString()} ETB`;
+
+        document.getElementById('tblPayMultiplier').innerText = activeSales;
+        document.getElementById('tblPayUnit').innerText = `${payPerBoxVal} ETB`;
+        document.getElementById('tblPayTotal').innerText = `${(activeSales * payPerBoxVal).toLocaleString()} ETB`;
+
+        document.getElementById('tblBoxSumUnit').innerText = `${ratePerBox.toLocaleString()} ETB`;
+        document.getElementById('tblBoxSumTotal').innerText = `${totalEarnings.toLocaleString()} ETB`;
+
+        // Side-by-side comparison updates
+        const rateAccess = getCommissionRatePerBox("Access", activeSales);
+        const rateCompact = getCommissionRatePerBox("Compact", activeSales);
+
+        const totalAccess = activeSales * rateAccess;
+        const totalCompact = activeSales * rateCompact;
+
+        document.getElementById('scenarioCardA_Tier').innerText = getSalesTierName(activeSales);
+        document.getElementById('scenarioCardB_Tier').innerText = getSalesTierName(activeSales);
+
+        document.getElementById('scenarioCardA_Rate').innerText = `${rateAccess} ETB`;
+        document.getElementById('scenarioCardB_Rate').innerText = `${rateCompact} ETB`;
+
+        document.getElementById('scenarioCardA_Total').innerText = `${totalAccess.toLocaleString()} ETB`;
+        document.getElementById('scenarioCardB_Total').innerText = `${totalCompact.toLocaleString()} ETB`;
+
+        // Sync comparative scenario volumes
+        const countElements = document.querySelectorAll('.scenarioSalesCount');
+        countElements.forEach(el => el.innerText = activeSales);
+
+        // Calculate potential extra earnings
+        const extraRevenue = totalCompact - totalAccess;
+        document.getElementById('upsellDifferenceText').innerText = `+${extraRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })} ETB`;
+
+        // Update Gamification Progress Meter scaled dynamically to 50
+        document.getElementById('progressBarLabel').innerText = `${activeSales} / 50`;
+        document.getElementById('progressBarFill').style.width = `${(activeSales / 50) * 100}%`;
+
+        // Configure milestones (ESP Accelerator @ 5+, Champion @ 10+)
+        const accelThreshold = 5;
+        const champThreshold = 10;
+
+        let trackingFeedbackMsg = "";
+        const tierProgressDescEl = document.getElementById('tierProgressDesc');
+
+        if (activeSales >= champThreshold) {
+            trackingFeedbackMsg = dictionary[currentLang].progress_max;
+            tierProgressDescEl.className = "text-[10px] block mt-1 font-bold text-[#FFC857]";
+        } else if (activeSales >= accelThreshold) {
+            const boxesNeeded = champThreshold - activeSales;
+            trackingFeedbackMsg = dictionary[currentLang].progress_needed
+                .replace('{num}', boxesNeeded)
+                .replace('{tier}', dictionary[currentLang].tier_champion);
+            tierProgressDescEl.className = "text-[10px] block mt-1 font-bold text-[#7B61FF]";
+        } else {
+            const boxesNeeded = accelThreshold - activeSales;
+            trackingFeedbackMsg = dictionary[currentLang].progress_needed
+                .replace('{num}', boxesNeeded)
+                .replace('{tier}', dictionary[currentLang].tier_accelerator);
+            tierProgressDescEl.className = "text-[10px] block mt-1 font-bold text-[#00D4FF]";
+        }
+        
+        tierProgressDescEl.innerText = trackingFeedbackMsg;
+
+        // Update indicator dots dynamically
+        document.getElementById('accelPointIndicator').className = activeSales >= accelThreshold 
+            ? "w-2.5 h-2.5 rounded-full bg-[#7B61FF] inline-block shadow-[0_0_8px_#7B61FF]" 
+            : "w-1.5 h-1.5 rounded-full bg-slate-600 inline-block";
+
+        document.getElementById('champPointIndicator').className = activeSales >= champThreshold 
+            ? "w-2.5 h-2.5 rounded-full bg-[#FFC857] inline-block shadow-[0_0_8px_#FFC857]" 
+            : "w-1.5 h-1.5 rounded-full bg-slate-600 inline-block";
+
+        // Refresh reference table highlights
+        if (document.getElementById('refRow_1')) buildCommissionTable();
+    }
+
+    // Input handlers
+    function syncSales(val) {
+        activeSales = parseInt(val) || 1;
+        recalculate();
+    }
+
+    // Step change boundary enforcement
+    function changeSales(step) {
+        if (activeSales + step <= 50 && activeSales + step >= 1) {
+            activeSales += step;
+            recalculate();
+        }
+    }
+
+    function setSales(val) {
+        activeSales = parseInt(val);
+        recalculate();
+    }
+
+    function manualSales() {
+        let val = parseInt(document.getElementById('salesInput').value);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > 50) val = 50;
+        activeSales = val;
+        recalculate();
+    }
+
+    // Populate the reference commission table — updates dynamically with active package
+    function buildCommissionTable() {
+        const tbody = document.getElementById('commissionTableBody');
+        const tableTitle = document.getElementById('commissionTableTitle');
+        const tableBadge = document.getElementById('commissionTableBadge');
+        const tableDesc = document.getElementById('commissionTableDesc');
+        const sub = activePackage === "Access" ? 100 : 300;
+        const pkgColor = activePackage === "Access" ? "#00D4FF" : "#7B61FF";
+        const pkgLabel = activePackage === "Access" ? "ACCESS RATES" : "COMPACT RATES";
+
+        if (tableTitle) tableTitle.innerText = `ESP ${activePackage} Commission Rate Table`;
+        if (tableBadge) { tableBadge.innerText = pkgLabel; tableBadge.style.color = pkgColor; }
+        if (tableDesc) tableDesc.innerHTML = `Official tiered commission schedule for ${activePackage} package &mdash; 1st Subscription: <strong style="color:${pkgColor}">${sub} ETB</strong> &bull; Front Margin: 150 ETB (fixed)`;
+
+        let html = '';
+        for (let s = 1; s <= 50; s++) {
+            const frontMargin = 150;
+            let payPerBox = 0;
+            if (s <= 4) payPerBox = 0;
+            else if (s === 5) payPerBox = 100;
+            else if (s === 6) payPerBox = 150;
+            else if (s === 7) payPerBox = 200;
+            else if (s === 8) payPerBox = 250;
+            else payPerBox = 300;
+            const totalPerBox = frontMargin + payPerBox + sub;
+            const totalPay = s * totalPerBox;
+            const isHighlight = s === activeSales;
+            const rowClass = isHighlight
+                ? "border-l-2"
+                : (s % 2 === 0 ? "bg-white/[0.02]" : "");
+            const highlightStyle = isHighlight ? `style="background:rgba(0,212,255,0.08); border-left-color:${pkgColor}"` : '';
+            html += `<tr class="${rowClass} hover:bg-white/5 transition-colors duration-100" id="refRow_${s}" ${highlightStyle}>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-center font-bold" style="${isHighlight ? `color:${pkgColor}` : 'color:#cbd5e1'}">${s}</td>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-right text-slate-400">150</td>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-right text-slate-400">${payPerBox > 0 ? payPerBox : ''}</td>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-right text-slate-400">${sub}</td>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-right font-bold" style="color:${pkgColor}">${totalPerBox.toLocaleString()}</td>
+                <td class="px-3 py-2 sm:px-5 sm:py-3 text-right font-black text-[#10B981]">${totalPay.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
+    }
+
+    // Init page structures
+    window.onload = function () {
+        translateUI();
+        buildCommissionTable();
+        recalculate();
+    }
+</script>
+</body>
+</html>
